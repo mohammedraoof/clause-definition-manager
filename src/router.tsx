@@ -8,7 +8,7 @@ export const createRouter = () => {
 	return createTanstackRouter({
 		routeTree,
 		defaultPreloadStaleTime: 0,
-		basepath: import.meta.env.PROD ? '/clause-definition-manager' : '/',
+		basepath: import.meta.env.PROD ? "/clause-definition-manager" : "/",
 	});
 };
 
