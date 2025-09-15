@@ -13,13 +13,13 @@ import {
 	ArrowUpDown,
 	ChevronLeft,
 	ChevronRight,
+	Edit,
 	Search,
-	X,
+	Trash2,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import {
-	clearFilters,
 	resetNonPersistedState,
 	setPageIndex,
 	setPageSize,
@@ -47,6 +47,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "./ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const columnHelper = createColumnHelper<ClauseDefinition>();
 
@@ -123,11 +124,6 @@ export default function ClauseTable({
 		},
 		[dispatch],
 	);
-
-	const handleClearFilters = useCallback(() => {
-		dispatch(clearFilters());
-		setDebouncedSearchTerm("");
-	}, [dispatch]);
 
 	const hasActiveFilters = searchTerm || selectedStates.length > 0;
 
@@ -246,21 +242,39 @@ export default function ClauseTable({
 				id: "actions",
 				header: "Actions",
 				cell: ({ row }) => (
-					<div className="flex gap-2">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => onEditClause(row.original)}
-						>
-							Edit
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => onDeleteClause(row.original.id)}
-						>
-							Delete
-						</Button>
+					<div className="flex gap-1">
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() => onEditClause(row.original)}
+									className="h-8 w-8 p-0"
+								>
+									<Edit className="h-4 w-4" />
+									<span className="sr-only">Edit clause</span>
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>Edit clause</p>
+							</TooltipContent>
+						</Tooltip>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() => onDeleteClause(row.original.id)}
+									className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+								>
+									<Trash2 className="h-4 w-4" />
+									<span className="sr-only">Delete clause</span>
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>Delete clause</p>
+							</TooltipContent>
+						</Tooltip>
 					</div>
 				),
 			}),
@@ -371,20 +385,6 @@ export default function ClauseTable({
 							<SelectItem value="Archived">Archived</SelectItem>
 						</SelectContent>
 					</Select>
-				</div>
-
-				{/* Clear Filters */}
-				<div className="flex items-center">
-					<Button
-						variant="outline"
-						onClick={handleClearFilters}
-						className={`flex items-center gap-2 transition-opacity duration-200 ${
-							hasActiveFilters ? "opacity-100" : "opacity-0 pointer-events-none"
-						}`}
-					>
-						<X className="h-4 w-4" />
-						Clear Filters
-					</Button>
 				</div>
 			</div>
 
