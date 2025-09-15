@@ -121,7 +121,7 @@ function App() {
 			/>
 
 			<Dialog open={showForm} onOpenChange={setShowForm}>
-				<DialogContent className="max-w-full min-w-4xl max-h-[90vh] overflow-y-auto">
+				<DialogContent className="md:max-w-full md:min-w-4xl max-h-[90vh] overflow-y-auto">
 					<DialogHeader>
 						<DialogTitle>
 							{editingClause ? "Edit Clause" : "Create New Clause"}

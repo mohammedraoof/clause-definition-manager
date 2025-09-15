@@ -102,7 +102,7 @@ export default function ClauseTable({
 		}, 300);
 
 		return () => clearTimeout(timer);
-	}, [searchTerm, setDebouncedSearchTerm]);
+	}, [searchTerm]);
 
 	// Reset non-persisted state on mount
 	useEffect(() => {
@@ -127,7 +127,7 @@ export default function ClauseTable({
 	const handleClearFilters = useCallback(() => {
 		dispatch(clearFilters());
 		setDebouncedSearchTerm("");
-	}, [dispatch, setDebouncedSearchTerm]);
+	}, [dispatch]);
 
 	const hasActiveFilters = searchTerm || selectedStates.length > 0;
 
@@ -459,58 +459,150 @@ export default function ClauseTable({
 
 			{/* Pagination Controls */}
 			{filteredData.length > 0 && (
-				<div className="flex items-center justify-between">
-					<div className="flex items-center space-x-2">
-						<p className="text-sm text-gray-700">
-							Showing {pageIndex * pageSize + 1} to{" "}
-							{Math.min((pageIndex + 1) * pageSize, filteredData.length)} of{" "}
-							{filteredData.length} results
-						</p>
-					</div>
-					<div className="flex items-center space-x-2">
-						<p className="text-sm text-gray-700">Rows per page:</p>
-						<Select
-							value={`${pageSize}`}
-							onValueChange={(value) => {
-								dispatch(setPageSize(Number(value)));
-							}}
-						>
-							<SelectTrigger className="h-8 w-[70px]">
-								<SelectValue placeholder={pageSize} />
-							</SelectTrigger>
-							<SelectContent side="top">
-								{[10, 25, 50, 100].map((pageSize) => (
-									<SelectItem key={pageSize} value={`${pageSize}`}>
-										{pageSize}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</div>
-					<div className="flex items-center space-x-2">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => dispatch(setPageIndex(pageIndex - 1))}
-							disabled={pageIndex === 0}
-						>
-							<ChevronLeft className="h-4 w-4" />
-							Previous
-						</Button>
-						<div className="flex items-center space-x-1">
-							<span className="text-sm text-gray-700">
+				<div className="space-y-4">
+					{/* Mobile Layout - Stacked */}
+					<div className="flex flex-col space-y-3 sm:hidden">
+						{/* Results info */}
+						<div className="text-center px-2">
+							<p className="text-xs sm:text-sm text-gray-700">
+								Showing {pageIndex * pageSize + 1} to{" "}
+								{Math.min((pageIndex + 1) * pageSize, filteredData.length)} of{" "}
+								{filteredData.length} results
+							</p>
+						</div>
+
+						{/* Page info and navigation */}
+						<div className="flex items-center justify-between px-2">
+							<span className="text-xs sm:text-sm text-gray-700 font-medium">
 								Page {pageIndex + 1} of {table.getPageCount()}
 							</span>
+							<div className="flex items-center space-x-1">
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() => dispatch(setPageIndex(pageIndex - 1))}
+									disabled={pageIndex === 0}
+									className="h-8 w-8 p-0"
+								>
+									<ChevronLeft className="h-4 w-4" />
+									<span className="sr-only">Previous</span>
+								</Button>
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() => dispatch(setPageIndex(pageIndex + 1))}
+									disabled={pageIndex >= table.getPageCount() - 1}
+									className="h-8 w-8 p-0"
+								>
+									<span className="sr-only">Next</span>
+									<ChevronRight className="h-4 w-4" />
+								</Button>
+							</div>
 						</div>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => dispatch(setPageIndex(pageIndex + 1))}
-							disabled={pageIndex >= table.getPageCount() - 1}
-						>
-							Next
-							<ChevronRight className="h-4 w-4" />
-						</Button>
+
+						{/* Rows per page */}
+						<div className="flex items-center justify-center space-x-2 px-2">
+							<p className="text-xs sm:text-sm text-gray-700">Rows per page:</p>
+							<Select
+								value={`${pageSize}`}
+								onValueChange={(value) => {
+									dispatch(setPageSize(Number(value)));
+								}}
+							>
+								<SelectTrigger className="h-8 w-[60px] text-xs">
+									<SelectValue placeholder={pageSize} />
+								</SelectTrigger>
+								<SelectContent side="top">
+									{[10, 25, 50, 100].map((pageSize) => (
+										<SelectItem
+											key={pageSize}
+											value={`${pageSize}`}
+											className="text-xs"
+										>
+											{pageSize}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+					</div>
+
+					{/* Desktop Layout - Horizontal */}
+					<div className="hidden sm:flex items-center justify-between flex-wrap gap-4">
+						<div className="flex items-center space-x-2 min-w-0 flex-1">
+							<p className="text-sm text-gray-700 truncate">
+								Showing {pageIndex * pageSize + 1} to{" "}
+								{Math.min((pageIndex + 1) * pageSize, filteredData.length)} of{" "}
+								{filteredData.length} results
+							</p>
+						</div>
+						<div className="flex items-center space-x-2 flex-shrink-0">
+							<p className="text-sm text-gray-700">Rows per page:</p>
+							<Select
+								value={`${pageSize}`}
+								onValueChange={(value) => {
+									dispatch(setPageSize(Number(value)));
+								}}
+							>
+								<SelectTrigger className="h-8 w-[70px]">
+									<SelectValue placeholder={pageSize} />
+								</SelectTrigger>
+								<SelectContent side="top">
+									{[10, 25, 50, 100].map((pageSize) => (
+										<SelectItem key={pageSize} value={`${pageSize}`}>
+											{pageSize}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+						<div className="flex items-center space-x-2 flex-shrink-0">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => dispatch(setPageIndex(pageIndex - 1))}
+								disabled={pageIndex === 0}
+								className="hidden md:inline-flex"
+							>
+								<ChevronLeft className="h-4 w-4" />
+								Previous
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => dispatch(setPageIndex(pageIndex - 1))}
+								disabled={pageIndex === 0}
+								className="md:hidden h-8 w-8 p-0"
+							>
+								<ChevronLeft className="h-4 w-4" />
+								<span className="sr-only">Previous</span>
+							</Button>
+							<div className="flex items-center space-x-1">
+								<span className="text-sm text-gray-700">
+									Page {pageIndex + 1} of {table.getPageCount()}
+								</span>
+							</div>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => dispatch(setPageIndex(pageIndex + 1))}
+								disabled={pageIndex >= table.getPageCount() - 1}
+								className="hidden md:inline-flex"
+							>
+								Next
+								<ChevronRight className="h-4 w-4" />
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => dispatch(setPageIndex(pageIndex + 1))}
+								disabled={pageIndex >= table.getPageCount() - 1}
+								className="md:hidden h-8 w-8 p-0"
+							>
+								<span className="sr-only">Next</span>
+								<ChevronRight className="h-4 w-4" />
+							</Button>
+						</div>
 					</div>
 				</div>
 			)}
