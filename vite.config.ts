@@ -4,6 +4,7 @@ import viteTsConfigPaths from 'vite-tsconfig-paths'
 import tailwindcss from '@tailwindcss/vite'
 
 const config = defineConfig({
+  base: process.env.NODE_ENV === 'production' ? '/clause-definition-manager/' : '/',
   plugins: [
     // this is the plugin that enables path aliases
     viteTsConfigPaths({
